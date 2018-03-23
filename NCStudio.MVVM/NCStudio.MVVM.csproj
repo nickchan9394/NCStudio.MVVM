@@ -52,5 +52,8 @@
   <ItemGroup>
     <Content Include=".gitignore" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="NCStudio.MVVM.nuspec" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
