@@ -12,11 +12,12 @@ using System.Reflection;
 
 namespace NCStudio.MVVM
 {
-    public class MvvmCommand:ICommand
+    public class MvvmCommand<TParam> :ICommand 
+        where TParam:class
     {
-        private Action<object> execute = null;
+        private Action<TParam> execute = null;
 
-        private Func<object, bool> canExecute = null;
+        private Func<TParam, bool> canExecute = null;
 
         private GenericWeakEventManager<PropertyChangedEventArgs> weakPropertyChangedEventListener;
 
@@ -27,7 +28,7 @@ namespace NCStudio.MVVM
         {
             if (this.canExecute != null)
             {
-                return this.canExecute(parameter);
+                return this.canExecute(parameter as TParam);
             }
             else
             {
@@ -39,7 +40,7 @@ namespace NCStudio.MVVM
         {
             if (this.execute != null)
             {
-                this.execute(parameter);
+                this.execute(parameter as TParam);
             }
         }
 
@@ -69,21 +70,21 @@ namespace NCStudio.MVVM
             OnCanExecuteChanged();
         }
 
-        public MvvmCommand AddListener<TEntity>(INotifyPropertyChanged source, Expression<Func<TEntity, object>> property)
+        public MvvmCommand<TParam> AddListener<TEntity>(INotifyPropertyChanged source, Expression<Func<TEntity, object>> property)
         {
             string propertyName = GetPropertyName(property);
             PropertyChangedEventManager.AddListener(source, weakPropertyChangedEventListener, propertyName);
             return this;
         }
 
-        public MvvmCommand AddListener<TEntity>(INotifyCollectionChanged source)
+        public MvvmCommand<TParam> AddListener<TEntity>(INotifyCollectionChanged source)
         {
             CollectionChangedEventManager.AddListener(source, weakCollectionChangedEventListener);
             return this;
         }
         #endregion
 
-        public MvvmCommand(Action<object> execute, Func<object, bool> canExecute)
+        public MvvmCommand(Action<TParam> execute, Func<TParam, bool> canExecute)
         {
             this.execute = execute;
             this.canExecute = canExecute;
