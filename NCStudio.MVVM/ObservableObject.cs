@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace NCStudio.MVVM
@@ -21,12 +22,10 @@ namespace NCStudio.MVVM
             }
         }
 
-        public void OnPropertyChanged(String propertyName)
+        public void OnPropertyChanged([CallerMemberName] string propertyName=null)
         {
-            if(PropertyChanged!=null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this,
+                 new PropertyChangedEventArgs(propertyName));
         }
 
         public void OnPropertyChanged<TProperty>(Expression<Func<TSource,TProperty>> propertyExpression,Object oldValue,Object newValue)
@@ -45,6 +44,8 @@ namespace NCStudio.MVVM
                 PropertyChanged(this, new PropertyChangedExtendedEventArgs(propertyName, oldValue, newValue));
             }
         }
+
+
 
         private string GetPropertyName<TProperty>(Expression<Func<TSource, TProperty>> expression)
         {
